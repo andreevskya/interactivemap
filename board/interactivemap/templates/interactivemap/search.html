@@ -1,0 +1,48 @@
+{% extends "interactivemap/base.html" %}
+{% load static %}
+{% static "" as baseStaticUrl %}
+
+{% block title %}
+	Поиск отдела или работника
+{% endblock %}
+
+{% block body %}
+	<div class="container-fluid" id="content">
+		<h4>Найдено {{ num_employees_found }} работников, {{ num_rooms_found }} помещений.</h4>
+		{% for employee in employees %}
+		<div class="media">
+			{% if employee.avatar %}
+			<div class="media-left">
+				<img src="{{ employee.avatar.url }}" class="media-object" style="width:60px">
+			</div>
+			{% endif %}
+			<div class="media-body">
+				<h4 class="media-heading"><a href="/floor/{{employee.room.floor.number}}#employee-{{ employee.id }}">{{ employee.firstName }} {{ employee.lastName }} {{ employee.patronym }}</a></h4>
+				{% if employee.post %}
+				<p class="text-muted">
+					{% for post in employee.post.all %}
+						{{post.title}}{% if not forloop.last %}, {% endif %}
+					{% endfor %}
+				</p>
+				{% endif %}
+				<p class="text-muted">
+					{{ employee.room.floor.number }} этаж{% if employee.room.name %}, {{ employee.room.name }}{% endif %} 
+				</p>
+			</div>
+		</div>
+		{% endfor %}
+		{% for room in rooms %}
+		<div class="media">
+			{% if room.photo %}
+			<div class="media-left">
+				<img src="{{ room.photo.url }}" class="media-object" style="width:160px">
+			</div>
+			{% endif %}
+			<div class="media-body">
+				<h4 class="media-heading"><a href="/floor/{{room.floor.number}}#room-{{ room.id }}">{{ room.name }}</a></h4>
+				<p class="text-muted">{{ room.description }}</p>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+{% endblock %}
