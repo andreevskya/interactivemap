@@ -17,7 +17,7 @@
 			</div>
 			{% endif %}
 			<div class="media-body">
-				<h4 class="media-heading"><a href="/floor/{{employee.room.floor.number}}#employee-{{ employee.id }}">{{ employee.firstName }} {{ employee.lastName }} {{ employee.patronym }}</a></h4>
+				<h4 class="media-heading"><a href="/floor/{{employee.room.floor.number}}#employee-{{ employee.id }}">{{ employee.firstName }} {{ employee.lastName }} {{ employee.patronym|default:"" }}</a></h4>
 				{% if employee.post %}
 				<p class="text-muted">
 					{% for post in employee.post.all %}
