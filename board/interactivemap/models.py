@@ -19,7 +19,7 @@ class Room(models.Model):
 	floor = models.ForeignKey(Floor, related_name='rooms')
 	
 	def __str__(self):
-		return '%d %s on the floor %s' % (self.id, self.name if self.name else "Unnamed Room", self.floor)
+		return '%s on the floor %s' % (self.name if self.name else "Unnamed Room", self.floor)
 
 class Division(models.Model):
 	title = models.CharField(max_length=64, null=False, blank=False)
@@ -55,6 +55,14 @@ class Employee(models.Model):
 	visualizationBase = models.CharField(unique=True, max_length=16, null=True, blank=True)
 	deskX = models.FloatField(null=True, blank=True)
 	deskY = models.FloatField(null=True, blank=True)
+	
+	def get_posts(self):
+		if not self.post:
+			return "Unassigned"
+		ps = []
+		for p in self.post.all():
+			ps.append(p.title)
+		return ", ".join(ps)
 	
 	def __str__(self):
 		return '%s %s' % (self.firstName, self.lastName)
