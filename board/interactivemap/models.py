@@ -13,7 +13,7 @@ class Floor(models.Model):
 		
 class Room(models.Model):
 	name = models.CharField(max_length=32, null=True, blank=True)
-	description = models.CharField(max_length=128, null=True, blank=True)
+	description = models.CharField(max_length=256, null=True, blank=True)
 	photo = models.ImageField(upload_to='avatars/rooms', null=True, blank=True)
 	base = models.CharField(max_length=16, null=False, blank=False)
 	floor = models.ForeignKey(Floor, related_name='rooms')
@@ -48,8 +48,8 @@ class Employee(models.Model):
 	subdivision = models.ForeignKey(Subdivision, null=True, blank=True, related_name='subdivision_employees')
 	post = models.ManyToManyField(Post, blank=True)
 	email = models.CharField(max_length=36, null=True, blank=True)
-	phone = models.CharField(max_length=20, null=True, blank=True)
-	phone2 = models.CharField(max_length=20, null=True, blank=True)
+	phone = models.CharField(max_length=26, null=True, blank=True)
+	phone2 = models.CharField(max_length=26, null=True, blank=True)
 	avatar = models.ImageField(upload_to='avatars/employees', null=True, blank=True)
 	room = models.ForeignKey(Room, related_name='employees')
 	visualizationBase = models.CharField(unique=True, max_length=16, null=True, blank=True)
