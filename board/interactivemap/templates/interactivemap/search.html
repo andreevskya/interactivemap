@@ -6,6 +6,26 @@
 	Поиск отдела или работника
 {% endblock %}
 
+{% block scripts %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#about-menu').addClass("active");
+	$.get("/rest/floor/numbers", function(data) {
+        	fillFloorsDropdown(data);
+    });
+    function fillFloorsDropdown(numbers) {
+		numbers.forEach(function(n) {
+			$("#floors-dropdown").append([
+				'<li id="floor-number-', n, '">',
+				'	<a href="/floor/', n, '">', n, '</a>',
+				'</li>'
+			].join(""));
+		});
+	}
+});
+</script>
+{% endblock %}
+
 {% block body %}
 	<div class="container-fluid" id="content">
 		<h4>Найдено {{ num_employees_found }} работников, {{ num_rooms_found }} помещений.</h4>
