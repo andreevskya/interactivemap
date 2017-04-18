@@ -128,11 +128,7 @@
 	};
 
 	function showRoomInfo(room) {
-		if(room.photo) {
-			$("#room-photo").attr('src', room.photo);
-		} else {
-			
-		}
+		$("#room-photo").attr('src', room.photo || "");
 		$("#room-name").text(room.name || "");
 		$("#room-text").text(room.description || "");
 		openRoomDescription();
