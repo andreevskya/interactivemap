@@ -28,7 +28,7 @@
 <div class="container-fluid" id="content">
 
 	<div id="nav" class="sidenav">
-		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav(); window.location.hash = '';">&times;</a>
 		<img id="employee-avatar" class="img-rounded" style="width: 160px; display: block; margin: auto">
   		<div class="media" style="margin-left: 20px; margin-right: 20px">
 			<div class="media-body">
@@ -44,7 +44,7 @@
 	</div>
 	
 	<div id="room-description" class="sidenav">
-		<a href="javascript:void(0)" class="closebtn" onclick="closeRoomDescription()">&times;</a>
+		<a href="javascript:void(0)" class="closebtn" onclick="closeRoomDescription(); window.location.hash = '';">&times;</a>
 		<img id="room-photo" class="img-rounded" style="width: 250px; display: block; margin: auto">
   		<div class="media" style="margin-left: 20px; margin-right: 20px">
 			<div class="media-body">
@@ -100,32 +100,46 @@
 				var title = "Interactive Map: " + data.number + "-" + getNumberEnding(data.number) + " этаж";
 				document.title = title;
 				$("#navbar-title-caption").text(title);
-				floorMap = new Floor("svgmap", data);
+				floorMap = new Floor(svgmap, data, 1);
 				
 				floorMap.onRoomClick = function(room) {
 					window.location.hash = "room-" + room.id;
-					showRoomInfo(room);
+					showRoom(room);
 				};
 				
-				floorMap.onWorkspaceClick = function(employee) {
+				floorMap.onEmployeeClick = function(employee) {
 					window.location.hash = "employee-" + employee.id;
-					showEmployeeInfo(employee);
+					showEmployee(employee);
 				};
 				
 				if(window.location.hash.startsWith("#employee-")) {
 					var employeeId = parseInt(window.location.hash.substring("#employee-".length));
-					showEmployeeInfo(floorMap.getEmployeeById(employeeId));
-					floorMap.highlightEmployeeById(employeeId);
+					var employee = floorMap.getEmployeeById(employeeId);
+					if(employee) {
+						showEmployee(employee);
+					}
 				} else {
 					if(window.location.hash.startsWith("#room-")) {
 						var roomId = parseInt(window.location.hash.substring("#room-".length));
-						showRoomInfo(floorMap.getRoomById(roomId));
-						floorMap.highlightRoomById(roomId);
+						var room = floorMap.getRoomById(roomId);
+						showRoom(room);
 					}
 				}
 		}, true);
 		$("#svgmap").attr("data", data.filename);
 	};
+	
+	function showEmployee(employee) {
+		floorMap.resetLastHighlightedElement();
+		floorMap.highlightElement(employee.visual);
+		showEmployeeInfo(employee);
+	}
+	
+	function showRoom(room) {
+		floorMap.resetLastHighlightedElement();
+		floorMap.highlightElement(room.visual);
+		showRoomInfo(room);
+	}
 
 	function showRoomInfo(room) {
 		$("#room-photo").attr('src', room.photo || "");
@@ -152,9 +166,7 @@
 			for(var i = 0; i < employee.post.length; ++i) {
 				post.push(employee.post[i].title);
 			}
-			$("#employee-position").text(post.join(", "));
-		} else {
-			$("#employee-position").text("");
+			$("#employee-position").text(post.join(", ") || "");
 		}
 		if(employee.email) {
 			$("#employee-email").text(employee.email);
@@ -216,7 +228,6 @@
 	}
 
 	function closeRoomDescription() {
-		floorMap.resetLastHighlightedElement();
 		closeSidePanel("room-description");
 	}
 	
@@ -226,7 +237,6 @@
 	}
 
 	function closeNav() {
-		floorMap.resetLastHighlightedElement();
 		closeSidePanel("nav");
 	}
 	

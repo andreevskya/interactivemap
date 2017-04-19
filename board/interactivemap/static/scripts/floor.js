@@ -1,17 +1,25 @@
-Floor.prototype.highlightedStyle = "fill: #FF9955";
+Floor.prototype.STYLE_HIGHLIGHTED = "fill: #FF9955";
+
+Floor.prototype.resetLastHighlightedElement = function() {
+	if(this.lastHighlightedElement) {
+		this.highlightElement(this.lastHighlightedElement, true);
+	}
+}
 
 Floor.prototype.highlightElement = function(element, removeHighlight) {
 	var self = this;
+	if(!element) {
+		return;
+	}
 	if(!element.children.length) {
 		this.highlightSingleElement(element, removeHighlight);
-		this.lastHighlighted = element;
 	} else {
 		Array.prototype.forEach.call(element.children, function(ec) {
 			self.highlightSingleElement(ec, removeHighlight);
 		});
-		this.lastHighlighted = element;
 	}
-}
+	this.lastHighlightedElement = removeHighlight ? null : element;
+};
 
 Floor.prototype.highlightSingleElement = function(element, removeHighlight) {
 	if(removeHighlight) {
@@ -21,118 +29,88 @@ Floor.prototype.highlightSingleElement = function(element, removeHighlight) {
 		}
 	} else {
 		if(!element.prevStyle) {
-			this.lastHighlighted = element;
 			element.prevStyle = element.style.cssText;
-			element.style = Floor.prototype.highlightedStyle;
+			element.style = Floor.prototype.STYLE_HIGHLIGHTED;
 		}
 	}
-}
-
-Floor.prototype.resetLastHighlightedElement = function() {
-
-	if(this.lastHighlighted) {
-		this.highlightElement(this.lastHighlighted, true);
-	}
-}
-
-Floor.prototype.getElementById = function(base) {
-	var result = null;
-	Array.prototype.forEach.call(this.g.children, function(c) {
-		if(c.id === base) {
-			result = c;
-			return true;
-		}
-	});
-	return result;
-}
-
-Floor.prototype.highlightEmployeeById = function(id) {
-	var self = this;
-	this.resetLastHighlightedElement();
-	this.highlightElement(this.getElementById(this.getEmployeeById(id).visualizationBase));
-}
+};
 
 Floor.prototype.getEmployeeById = function(id) {
-	var result = null;
-	this.floorData.rooms.forEach(function(room) {
-		room.employees.forEach(function(employee) {
-			if(employee.id === id) {
-				result = employee;
-				return true;
-			}
-		});
-	});
-	return result;
+	return this.getElementById(this.employees, id);
 }
 
 Floor.prototype.getRoomById = function(id) {
+	return this.getElementById(this.rooms, id);
+}
+
+Floor.prototype.getElementById = function(arr, id) {
+	var a = arr || [];
 	var result = null;
-	this.floorData.rooms.forEach(function(room) {
-		if(room.id === id) {
-			result = room;
+	a.forEach(function(e){
+		if(e.id === id) {
+			result = e;
 			return true;
 		}
 	});
 	return result;
 }
 
-Floor.prototype.highlightRoomById = function(id) {
+function Floor(svg, floorData, gIndex) {
+	gIndex = gIndex || 1; //svgPanAndZoom place it's own g, so we will use the second one.
+	this.employees = [];
+	this.rooms = [];
+	this.svg = svg;
+	this.g = svg.contentDocument.getElementsByTagName('g')[gIndex];
+	this.lastHighlightedElement = null;
 	var self = this;
-	this.resetLastHighlightedElement();
-	this.highlightElement(this.getElementById(this.getRoomById(id).base));
-}
-
-
-function Floor(svgId, floorData, groupIndex) {
-	groupIndex = groupIndex || 1;
-	this.floorData = floorData;
-	this.svgMapId = svgId;
-	this.svgMap = document.getElementById(this.svgMapId);
-	if(!this.svgMap) {
-		console.log("Unabled to find element with id ", this.svgMapId);
-		return;
-	}
-	// svgPan&Zoom ставит поверх изображения свой g, поэтому берём второй.
-	this.g = this.svgMap.contentDocument.getElementsByTagName('g')[groupIndex];
-	
-	var self = this;
-	
-	Array.prototype.forEach.call(this.g.children, function(c) {
-		floorData.rooms.forEach(function(r) {
-			if(c.id === r.base) {
-				c.addEventListener("click", function(e) {
-					if(self.onRoomClick) {
-						self.onRoomClick(r);
-					}
-					self.resetLastHighlightedElement();
-					self.highlightElement(e.currentTarget);
-				});
-			}	
-		});
-	});
-	
-	Array.prototype.forEach.call(this.g.children, function(c) {
-		floorData.rooms.forEach(function(r) {
-			r.employees.forEach(function(employee) {
-				if(!employee.visualizationBase) {
-					return;
-				}
-				if(c.id === employee.visualizationBase) {
-					c.addEventListener("mouseover", function(e) {
-						//self.highlightElement(e.currentTarget);
-					});
-					c.addEventListener("mouseleave", function(e) {
-						//self.highlightElement(e.currentTarget, true);
-					});
-					c.addEventListener("click", function(e) {
-        				if(self.onWorkspaceClick) {
-							self.onWorkspaceClick(employee);
-						}
-						self.resetLastHighlightedElement();
-						self.highlightElement(e.currentTarget);
-					});
+	floorData.rooms.forEach(function(room) {
+		var roomVisualization = self.svg.contentDocument.getElementById(room.base);
+		if(!roomVisualization) {
+			console.log("Room ", room.id, " has no visualization!");
+		} else {
+			room.visual = roomVisualization;
+			room.visual.addEventListener("click", function(e) {
+				if(self.onRoomClick) {
+					self.onRoomClick(room);
 				}
 			});
+			self.rooms.push(room);
+		}
+		room.employees.forEach(function(employee) {
+			if(employee.visualizationBase) {
+				var employeeVisualization = self.svg.contentDocument.getElementById(employee.visualizationBase);
+				if(!employeeVisualization) {
+					console.log("Employee ", employee.id, " has no visualization!");
+					return; // continue;
+				} else {
+					employee.visual = employeeVisualization;
+					employee.visual.addEventListener("click", function(e) {
+						if(self.onEmployeeClick) {
+							self.onEmployeeClick(employee);
+						}
+					});
+					self.employees.push(employee);
+				}
+			}
 		});
 	});
+}
+
+Floor.prototype.createWorkplace = function(employee) {
+	if( !employee.deskX || !employee.deskY ) {
+		console.log("Unable to create workplace for employee ", employee.id, " with coordinates (", employee.deskX, ", ", employee.deskY);
+		return null;
+	}
+	var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+	circle.setAttribute("id", "employee" + employee.id.toString());
+	circle.employeeId = employee.id;
+	circle.setAttribute("cx", employee.deskX);
+	circle.setAttribute("cy", employee.deskY);
+	circle.setAttribute("r", 80);
+	circle.setAttribute("stroke", "#000000");
+	circle.setAttribute("stroke-width", 15);
+	circle.setAttribute("stroke-miterlimit", 4);
+	circle.setAttribute("style", "fill: #00FF00");
+	circle.setAttribute("stroke-opacity", 1);
+	return circle;
 }
