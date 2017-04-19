@@ -73,15 +73,12 @@
 		$('#room-description').height($(window).height() - $('#header').height() - 50);
 		$('#room-description').css({'top': $('#header').height() });        
         mask();
-        
-        $.get("/rest/floor/numbers", function(data) {
-        	fillFloorsDropdown(data);
-        	if( !startFloor ) {
-        		$.get("/rest/floor", onFloorDataLoadedSuccess);
-        	} else {
-        		$.get("/rest/floor/" + startFloor, onFloorDataLoadedSuccess);
-        	}
-        });
+
+        if( !startFloor ) {
+        	$.get("/rest/floor", onFloorDataLoadedSuccess);
+        } else {
+        	$.get("/rest/floor/" + startFloor, onFloorDataLoadedSuccess);
+        }
 	});
 	
 	function onFloorDataLoadedSuccess(data) {
@@ -206,16 +203,6 @@
 			case "3":
 				return "ий";
 		}
-	}
-	
-	function fillFloorsDropdown(numbers) {
-		numbers.forEach(function(n) {
-			$("#floors-dropdown").append([
-				'<li id="floor-number-', n, '">',
-				'	<a href="/floor/', n, '">', n, '</a>',
-				'</li>'
-			].join(""));
-		});
 	}
 	
 	function markFloorsDropdownElementAsCurrent(floorNumber) {

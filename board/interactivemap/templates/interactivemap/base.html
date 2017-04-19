@@ -45,6 +45,17 @@
 	{% block body %}{% endblock %}
 	
 	<script type="text/javascript">
+		$(document).ready(function() {
+			$.get("/rest/floor/numbers", function(data) {
+        		data.forEach(function(n) {
+					$("#floors-dropdown").append([
+						'<li id="floor-number-', n, '">',
+						'	<a href="/floor/', n, '">', n, '</a>',
+						'</li>'
+					].join(""));
+				});
+        	});
+		});
 		function mask() { $("body").addClass("loading"); }
 		function unmask() { $("body").removeClass("loading"); }
 	</script>
