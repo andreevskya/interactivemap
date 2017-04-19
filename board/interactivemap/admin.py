@@ -5,7 +5,7 @@ from .models import *
 
 class EmployeeAdmin(admin.ModelAdmin):
 	view_on_site = True
-	list_display = ('lastName', 'firstName', 'patronym', 'positions', 'room', 'visualizationBase')
+	list_display = ('firstName', 'lastName', 'patronym', 'positions', 'room', 'visualizationBase')
 	list_display_links = ('lastName', 'firstName', 'patronym')
 	
 	def positions(self, obj):

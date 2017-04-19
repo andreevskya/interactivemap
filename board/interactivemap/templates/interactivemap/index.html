@@ -152,12 +152,12 @@
 		$("#employee-avatar").attr('src', employee.avatar || "");
 		$("#employee-name").text([employee.firstName, employee.lastName, employee.patronym].join(" "));
 		if( employee.department ) {
-			$("#employee-division").text(employee.department.title);
+			$("#employee-division").text(employee.division.title);
 		} else {
 			$("#employee-division").text("");
 		}
 		if(employee.division) {
-			$("#employee-subdivision").text(employee.division.title);
+			$("#employee-subdivision").text(employee.subdivision.title);
 		} else {
 			$("#employee-subdivision").text("");
 		}
