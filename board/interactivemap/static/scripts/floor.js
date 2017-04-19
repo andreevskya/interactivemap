@@ -77,20 +77,28 @@ function Floor(svg, floorData, gIndex) {
 			self.rooms.push(room);
 		}
 		room.employees.forEach(function(employee) {
+			var employeeVisualization = null;
 			if(employee.visualizationBase) {
-				var employeeVisualization = self.svg.contentDocument.getElementById(employee.visualizationBase);
-				if(!employeeVisualization) {
-					console.log("Employee ", employee.id, " has no visualization!");
+				employeeVisualization = self.svg.contentDocument.getElementById(employee.visualizationBase);
+			} else {
+				if(!employee.deskX || !employee.deskY) {
+					console.log("Employee ", employee.id, " has neither visualizationBase or desk coordinates!");
 					return; // continue;
-				} else {
-					employee.visual = employeeVisualization;
-					employee.visual.addEventListener("click", function(e) {
-						if(self.onEmployeeClick) {
-							self.onEmployeeClick(employee);
-						}
-					});
-					self.employees.push(employee);
 				}
+				employeeVisualization = self.createWorkplace(employee);
+				self.g.appendChild(employeeVisualization);
+			}
+			if(!employeeVisualization) {
+				console.log("Employee ", employee.id, " has no visualization!");
+				return; // continue;
+			} else {
+				employee.visual = employeeVisualization;
+				employee.visual.addEventListener("click", function(e) {
+					if(self.onEmployeeClick) {
+						self.onEmployeeClick(employee);
+					}
+				});
+				self.employees.push(employee);
 			}
 		});
 	});
