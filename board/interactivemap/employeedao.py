@@ -14,4 +14,4 @@ class EmployeeDao:
 		try:
 			return Employee.objects.get(id=id)
 		except ObjectDoesNotExist as edne:
-			return None		
+			return None

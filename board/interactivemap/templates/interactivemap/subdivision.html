@@ -1,0 +1,13 @@
+{% extends "interactivemap/base.html" %}
+{% load static %}
+{% static "" as baseStaticUrl %}
+
+{% block title %}
+	Interactive Map
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid" id="content">
+	<h4>{{ sd.title }}</h4>
+</div>
+{% endblock %}

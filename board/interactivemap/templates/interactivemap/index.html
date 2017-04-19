@@ -154,9 +154,9 @@
 			$("#employee-division").text("");
 		}
 		if(employee.division) {
-			$("#employee-subdivision").text(employee.subdivision.title);
+			$("#employee-subdivision").html('<a href="/subdivision/' + employee.subdivision.id + '">' + employee.subdivision.title + "</a>");
 		} else {
-			$("#employee-subdivision").text("");
+			$("#employee-subdivision").html("");
 		}
 		if(employee.post) {
 			var post = [];

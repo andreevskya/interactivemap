@@ -6,6 +6,7 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^floor/(?P<number>[0-9]?)$', views.floor, name='floor'),
+    url(r'^subdivision/(?P<id>[0-9]+)$', views.subdivision, name='subdivision'),
     url(r'^search', views.search, name='search'),
     url(r'^rest', include('interactivemap.rest_urls')),
     url(r'^pages/', include('django.contrib.flatpages.urls')),

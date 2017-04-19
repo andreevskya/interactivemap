@@ -5,6 +5,7 @@ from django.http import Http404
 from .floordao import FloorDao
 from .employeedao import EmployeeDao
 from .roomdao import RoomDao
+from .subdivisiondao import SubdivisionDao
 
 def index(request):
 	dao = FloorDao()
@@ -30,6 +31,16 @@ def search(request):
 		"num_rooms_found": len(rooms) if rooms else 0
 	}
 	return render(request, 'interactivemap/search.html', context)
+
+def subdivision(request, id):
+	dao = SubdivisionDao()
+	subdivision = dao.get(int(id))
+	if not subdivision:
+		raise Http404()
+	context = {
+		'sd': subdivision
+	}
+	return render(request, 'interactivemap/subdivision.html', context)
 
 def floor(request, number=None):
 	if not number:
