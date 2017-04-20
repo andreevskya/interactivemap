@@ -62,6 +62,7 @@ function Floor(svg, floorData, gIndex) {
 	this.svg = svg;
 	this.g = svg.contentDocument.getElementsByTagName('g')[gIndex];
 	this.lastHighlightedElement = null;
+	this.moved = false;
 	var self = this;
 	floorData.rooms.forEach(function(room) {
 		var roomVisualization = self.svg.contentDocument.getElementById(room.base);
@@ -69,11 +70,25 @@ function Floor(svg, floorData, gIndex) {
 			console.log("Room ", room.id, " has no visualization!");
 		} else {
 			room.visual = roomVisualization;
-			room.visual.addEventListener("click", function(e) {
+			
+			room.visual.addEventListener("mousemove", function(e) {
+				self.moved = true;
+			});
+			room.visual.addEventListener("mousedown", function(e) {
+				self.moved = false;
+			});
+			room.visual.addEventListener("mouseup", function(e) {
+				if(!self.moved) {
+					if(self.onRoomClick) {
+						self.onRoomClick(room);
+					}
+				}
+			});
+			/*room.visual.addEventListener("click", function(e) {
 				if(self.onRoomClick) {
 					self.onRoomClick(room);
 				}
-			});
+			});*/
 			self.rooms.push(room);
 		}
 		room.employees.forEach(function(employee) {
