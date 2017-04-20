@@ -9,5 +9,35 @@
 {% block body %}
 <div class="container-fluid" id="content">
 	<h4>{{ sd.title }}</h4>
+	<div class="row">
+		{% for employee in sd.subdivision_employees.all %}
+		<div class="col-md-3">
+			<div class="media">
+		  		<div class="media-top media-middle">
+		  			{% if employee.avatar %}
+					<img src="{{employee.avatar.url}}" class="media-object" style="width:180px"/>
+					{% else %}
+					<img src="{% static '/images/avatar_stub_male.png'%}" class="media-object" style="width:180px"/>
+					{% endif %}
+		  		</div>
+		  		<div class="media-body">
+					<h4 class="media-heading">{{employee.firstName}} {{employee.lastName}} {{employee.patronym}}</h4>
+					<p class="text-muted">
+					{% if employee.post %}{% for post in employee.post.all %}{{post.title}}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
+					</p>
+					{% if employee.email %}
+					<p class="text-muted">Email: <a href="mailto:{{employee.email}}">{{employee.email}}</a></p>
+					{% endif %}
+					{% if employee.phone %}
+					<p class="text-muted">Phone: {{employee.phone}}</p>
+					{% endif %}
+					{% if employee.phone2 %}
+					<p class="text-muted">Phone2: {{employee.phone2}}</p>
+					{% endif %}
+		  		</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
 </div>
 {% endblock %}
