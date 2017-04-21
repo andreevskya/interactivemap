@@ -24,7 +24,7 @@
 						{% endif %}
 			  		</div>
 			  		<div class="media-body">
-						<h4 class="media-heading">{{employee.firstName}} {{employee.lastName}} {{employee.patronym}}</h4>
+						<h4 class="media-heading">{{employee.firstName}} {{employee.lastName}}{% if employee.patronym %} {{employee.patronym}}{% endif %}</h4>
 						<p class="text-muted">
 						{% if employee.post %}{% for post in employee.post.all %}{{post.title}}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
 						</p>
